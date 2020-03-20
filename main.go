@@ -37,10 +37,6 @@ func main() {
 			*shortVal = arg0
 		}
 	}
-	//fmt.Fprintf(os.Stderr,
-	//	"Hai inserito: %s %s %b\n", *shortVal, *actionVal, *addMode)
-
-	//fmt.Println("Short: ", *shortVal)
 
 	db, err :=
 		sql.Open("sqlite3", dbPath())
