@@ -30,10 +30,7 @@ func main() {
 	guiGo := flag.Bool("gui", false, "attiva gui")
 
 	flag.Parse()
-	/*
-		usr, err := user.Current()
-		fmt.Println("==========" + usr.HomeDir)
-	*/
+
 	if len(flag.Args()) > 0 {
 		arg0 := flag.Args()[0]
 		if *shortVal == "" && flag.Args()[0] != "" {
