@@ -116,6 +116,39 @@ func nuovoElemento() {
 	wnd.ShowAll()
 }
 
+/* ------- TreeView --------- */
+// Appends single value to the TreeView's model
+func AppendToList(value string, c int) {
+	i := ListStore.Append()
+	ListStore.SetValue(i, 0, value)
+	ListStore.SetValue(i, 1, value+"xx")
+}
+
+// Appends several values to the TreeView's model
+func AppendMultipleToList(values ...string) {
+	for _, v := range values {
+		AppendToList(v, 0)
+	}
+}
+
+func listaClick(selection *gtk.TreeSelection) {
+	var iter *gtk.TreeIter
+	var model gtk.ITreeModel
+	var ok bool
+	model, iter, ok = selection.GetSelected()
+	if ok {
+		tpath, err := model.(*gtk.TreeModel).GetPath(iter)
+		if err != nil {
+			log.Printf("treeSelectionChangedCB: Could not get path from model: %s\n", err)
+			return
+		}
+		log.Printf("treeSelectionChangedCB: selected path: %s\n", tpath)
+		ListStore.SetValue(iter, 0, "xxx")
+	}
+}
+
+/* ------- FINE TV ---------- */
+
 var builder *gtk.Builder
 var app *gtk.Application
 var err error
@@ -129,6 +162,7 @@ var curAction struct {
 	azione   string
 	bottone  *gtk.Button
 }
+var ListStore *gtk.ListStore
 
 func InitGui() {
 	const appID = "com.retc3.mytest"
@@ -149,7 +183,7 @@ func InitGui() {
 		// Use this instead if you have your glade XML in a separate file
 		// builder, err := gtk.BuilderNewFromFile("mytest.glade")
 
-		if 1 == 1 {
+		if 1 == 0 {
 			builder, err = gtk.BuilderNew()
 			if err != nil {
 				log.Fatalln("Couldn't make builder:", err)
@@ -176,6 +210,35 @@ func InitGui() {
 
 			lb1.(*gtk.ListBox).Add(btt)
 		}
+
+		/*btn, _ := gtk.LabelNew("ciao")*/
+		/*tv1, _ := builder.GetObject("treeView1")
+		for i := 1; i < 4; i++ {
+			col, _ := gtk.TreeViewColumnNew()
+			nomecol := fmt.Sprintf("Titolo %d", i)
+			col.SetTitle(nomecol)
+			tv1.(*gtk.TreeView).AppendColumn(col)
+		}
+		col := tv1.(*gtk.TreeView).GetColumn(1)
+		store, _ := gtk.store*/
+
+		//TreeView, _ := gtk.TreeViewNew() //builder.GetObject("treeView1")
+		TreeView, _ := builder.GetObject("treeView1")
+		//Entry, _ := gtk.EntryNew()
+		ListStore, _ = gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING)
+		// TreeView properties
+		{
+			renderer, _ := gtk.CellRendererTextNew()
+			column, _ := gtk.TreeViewColumnNewWithAttribute("Value", renderer, "text", 0)
+			TreeView.(*gtk.TreeView).AppendColumn(column)
+			column1, _ := gtk.TreeViewColumnNewWithAttribute("Value1", renderer, "text", 1)
+			TreeView.(*gtk.TreeView).AppendColumn(column1)
+		}
+		TreeView.(*gtk.TreeView).SetModel(ListStore)
+		AppendMultipleToList("Go", "Docker", "CockroachDB")
+
+		sel, _ := TreeView.(*gtk.TreeView).GetSelection()
+		sel.Connect("changed", listaClick)
 
 		wnd := obj.(*gtk.Window)
 		wnd.ShowAll()
