@@ -48,9 +48,6 @@ func main() {
 		create(db)
 	}
 
-	//dir, err := os.Getwd()
-	//panicOnErr(err)
-
 	if *guiGo {
 		gui.InitGui()
 	} else if *addMode {
